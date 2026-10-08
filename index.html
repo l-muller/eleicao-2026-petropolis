@@ -3,80 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Petrópolis – votos por bairro</title>
+<title>Petrópolis em votos</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bege:#f3ede0; --bege-2:#e9e0cd; --papel:#faf6ec;
-  --azul:#1d4f91; --vermelho:#b5372f; --tinta:#26303d; --suave:#6f6a5e; --linha:#d8ccb4;
+  --ink:#0b1b3a; --mut:#5d6b86; --bg:#f4f6fb; --card:#fff; --line:#e3e8f2;
+  --blue:#2f5bff; --red:#ff3b4e; --amber:#ff7a1a; --chip:#eaeefb;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bege);color:var(--tinta);font:15px/1.5 "Public Sans",system-ui,sans-serif}
-.w{max-width:1280px;margin:0 auto;padding:20px 16px 40px}
-h1{font:600 28px/1.15 Fraunces,Georgia,serif;margin:0 0 4px}
-.sub{margin:0 0 16px;color:var(--suave)}
-.tot{display:flex;flex-wrap:wrap;margin-bottom:14px;border:1px solid var(--linha);border-radius:6px;background:var(--papel);overflow:hidden}
-.tot div{padding:9px 16px;border-right:1px solid var(--linha);flex:1 1 120px}
-.tot div:last-child{border-right:0}
-.tot b{display:block;font:600 19px Fraunces,Georgia,serif}
-.tot span{font-size:12px;color:var(--suave)}
-.tot .f b{color:var(--azul)} .tot .l b{color:var(--vermelho)}
-.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-select,input{font:inherit;color:var(--tinta);background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:8px 10px}
-select:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var(--azul);outline-offset:1px}
-.g{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px}
-@media(max-width:900px){.g{grid-template-columns:1fr}}
-.box{background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:10px;min-width:0}
-#mapa{height:min(74vh,700px);min-height:430px;border-radius:4px;background:var(--bege-2)}
-.leg{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--suave)}
-.leg i{flex:1;max-width:260px;height:9px;border-radius:2px}
-.nota{font-size:12px;color:var(--suave);margin-top:8px}
-.nota.err{color:var(--vermelho)}
-h2{font:600 19px Fraunces,Georgia,serif;margin:0 0 6px}
-.bar{display:flex;height:12px;border-radius:2px;overflow:hidden;margin:6px 0 10px}
-.kv{display:grid;grid-template-columns:1fr auto;gap:2px 12px}
-.kv .k{color:var(--suave)}
-.list{margin-top:12px;max-height:380px;overflow:auto;border-top:1px solid var(--linha)}
-.it{display:flex;justify-content:space-between;gap:8px;padding:7px 4px;border-bottom:1px solid var(--linha);cursor:pointer}
-.it:hover,.it.sel{background:var(--bege-2)}
-.it em{font-style:normal;color:var(--suave);font-variant-numeric:tabular-nums}
-.leaflet-popup-content{font:14px/1.45 "Public Sans",system-ui,sans-serif;margin:12px 14px;min-width:200px}
-.leaflet-popup-content-wrapper{background:var(--papel);color:var(--tinta);border-radius:6px}
-.leaflet-popup-tip{background:var(--papel)}
-.leaflet-tooltip{font:12px "Public Sans",system-ui,sans-serif;color:var(--tinta);background:var(--papel);border-color:var(--linha)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "DM Sans",system-ui,sans-serif}
+.w{max-width:1360px;margin:0 auto;padding:22px 18px 44px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px}
+h1{font:700 32px/1.05 Sora,system-ui,sans-serif;letter-spacing:-.025em;margin:0}
+h1 span{color:var(--blue)}
+.sub{margin:6px 0 0;color:var(--mut)}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;border-top:4px solid var(--line)}
+.kpi.f{border-top-color:var(--blue)} .kpi.l{border-top-color:var(--red)}
+.kpi b{display:block;font:700 22px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--mut)}
+.kpi.f b{color:var(--blue)} .kpi.l b{color:var(--red)}
+.bar-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}
+.grp{display:flex;align-items:center;gap:8px;min-width:0}
+.grp>label{font-size:12px;color:var(--mut);white-space:nowrap}
+.pills{display:flex;gap:3px;background:var(--chip);border-radius:999px;padding:3px;overflow-x:auto;max-width:100%}
+.pill{border:0;background:transparent;color:var(--ink);font:500 13px "DM Sans",sans-serif;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.pill:hover{background:rgba(47,91,255,.12)}
+.pill.on{background:var(--ink);color:#fff}
+.pill:focus-visible,.it:focus-visible,#q:focus-visible,#ver:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#q{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 14px;color:var(--ink);width:190px}
+#ver{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font:500 13px "DM Sans",sans-serif;color:var(--ink);cursor:pointer}
+#ver:hover{border-color:var(--blue);color:var(--blue)}
+.sp{flex:1}
+.g{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:14px;align-items:start}
+@media(max-width:980px){.g{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;min-width:0}
+.mapwrap{position:relative;padding:8px}
+#mapa{height:min(76vh,760px);min-height:460px;border-radius:10px;background:#e9edf5}
+.legend{position:absolute;left:20px;bottom:20px;z-index:800;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-radius:12px;padding:8px 12px;box-shadow:0 4px 18px rgba(11,27,58,.15);font-size:12px;color:var(--mut);min-width:190px}
+.legend b{display:block;color:var(--ink);font-size:12px;margin-bottom:5px}
+.legend i{display:block;height:8px;border-radius:99px}
+.legend div{display:flex;justify-content:space-between;margin-top:3px;font-variant-numeric:tabular-nums}
+.nota{font-size:12px;color:var(--mut);margin:8px 10px 4px}
+.nota.err{color:var(--red)}
+.side{position:sticky;top:12px;padding:16px}
+@media(max-width:980px){.side{position:static}}
+h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
+.dh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.tag{font-size:12px;font-weight:700;color:#fff;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.tag.f{background:var(--blue)} .tag.l{background:var(--red)}
+.duelo{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.duelo div{display:flex;flex-direction:column}
+.duelo div+div{text-align:right}
+.duelo b{font:700 28px/1.1 Sora,system-ui,sans-serif;letter-spacing:-.03em}
+.duelo span{font-size:12px;color:var(--mut)}
+.azul{color:var(--blue)} .verm{color:var(--red)}
+.vs{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--red)}
+.vs .a{background:var(--blue);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.vs .b{flex:1;background:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.stats div{background:var(--bg);border-radius:12px;padding:8px 10px}
+.stats b{display:block;font:700 15px Sora,system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:var(--mut)}
+.list{margin-top:14px;max-height:360px;overflow:auto;border-top:1px solid var(--line)}
+.it{position:relative;display:flex;justify-content:space-between;gap:8px;padding:8px 6px 11px;cursor:pointer;border-radius:8px;transition:background .15s}
+.it:hover,.it.sel{background:var(--bg)}
+.it em{font-style:normal;color:var(--mut);font-variant-numeric:tabular-nums;font-size:13px}
+.it b{position:absolute;left:6px;bottom:4px;height:3px;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1),background .5s}
+.leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 8px 28px rgba(11,27,58,.22)}
+.leaflet-popup-content{margin:12px 14px;font:14px/1.4 "DM Sans",sans-serif;color:var(--ink);min-width:210px}
+.pp h3{font:700 15px Sora,system-ui,sans-serif;margin:0 0 8px}
+.pp .pr{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:13px}
+.leaflet-tooltip{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:6px 10px;font:500 12px "DM Sans",sans-serif;box-shadow:0 4px 14px rgba(11,27,58,.3)}
+.leaflet-tooltip:before{display:none}
+.bol{filter:drop-shadow(0 2px 4px rgba(11,27,58,.35))}
 </style>
 </head>
 <body>
 <div class="w">
-  <h1>Petrópolis: votos por bairro</h1>
-  <p class="sub">Flávio Bolsonaro e Lula. Clique num bairro ou numa bolha para ver os números.</p>
-  <div class="tot" id="tot"></div>
-  <div class="ctl">
-    <select id="size" aria-label="Tamanho da bolha">
-      <option value="tot">Bolha: total de votos</option>
-      <option value="f">Bolha: votos do Flávio</option>
-      <option value="l">Bolha: votos do Lula</option>
-      <option value="dif">Bolha: diferença de votos</option>
-      <option value="a">Bolha: abstenções</option>
-    </select>
-    <select id="met" aria-label="Cor">
-      <option value="share">Cor: % Flávio contra Lula</option>
-      <option value="dif">Cor: diferença de votos</option>
-      <option value="abst">Cor: % de abstenção</option>
-      <option value="tot">Cor: total de votos</option>
-    </select>
+  <header>
+    <div>
+      <h1>Petrópolis em <span>votos</span></h1>
+      <p class="sub">Flávio Bolsonaro × Lula, bairro a bairro. Toque numa bolha para ver o duelo.</p>
+    </div>
+  </header>
+
+  <div class="kpis" id="tot"></div>
+
+  <div class="bar-ctl">
+    <div class="grp"><label>Tamanho</label><div class="pills" id="pTam"></div></div>
+    <div class="grp"><label>Cor</label><div class="pills" id="pCor"></div></div>
+    <span class="sp"></span>
     <input id="q" type="search" placeholder="Buscar bairro" aria-label="Buscar bairro">
+    <button id="ver" type="button">Ver tudo</button>
   </div>
+
   <div class="g">
-    <div class="box">
-      <div id="mapa"></div>
-      <div class="leg"><span id="lmin"></span><i id="lbar"></i><span id="lmax"></span></div>
+    <div class="card">
+      <div class="mapwrap">
+        <div id="mapa"></div>
+        <div class="legend"><b id="lt"></b><i id="lbar"></i><div><span id="lmin"></span><span id="lmax"></span></div></div>
+      </div>
       <div class="nota" id="nota"></div>
     </div>
-    <div class="box"><div id="det"></div><div class="list" id="list"></div></div>
+    <aside class="card side"><div id="det"></div><div class="list" id="list"></div></aside>
   </div>
 </div>
 
@@ -135,19 +170,22 @@ function agrupar(g, D){
 const $ = id => document.getElementById(id);
 const nf = x => x.toLocaleString('pt-BR');
 const pc = x => (x*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
-const BEGE=[243,237,224], AZUL=[29,79,145], VERM=[181,55,47], MARROM=[138,98,52];
-const mix=(a,b,t)=>{t=Math.max(0,Math.min(1,t));return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`};
-const NOMES_TAM = {tot:'total de votos',f:'votos do Flávio',l:'votos do Lula',dif:'diferença de votos',a:'abstenções'};
+const MEIO=[242,245,252], AZUL=[47,91,255], VERM=[255,59,78];
+const TOT0=[226,234,255], TOT1=[27,47,168], ABS0=[255,236,214], ABS1=[255,122,26];
+const lerp=(a,b,t)=>{t=Math.max(0,Math.min(1,t));return a.map((v,i)=>v+(b[i]-v)*t)};
+const rgb=a=>`rgb(${a.map(Math.round).join(',')})`;
+const OPC_TAM=[['tot','Total'],['f','Flávio'],['l','Lula'],['dif','Diferença'],['a','Abstenções']];
+const OPC_COR=[['share','% Flávio'],['dif','Diferença'],['abst','Abstenção'],['tot','Total']];
+const TIT_COR={share:'% Flávio contra Lula',dif:'Diferença de votos',abst:'% de abstenção',tot:'Total de votos'};
 
-let D=[], F=[], T=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol;
+let D=[], F=[], T=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol, anim=0;
 
 /* ---------- mapa base ---------- */
 function iniciarMapa(){
   mapa = L.map('mapa',{zoomControl:true}).setView([-22.5,-43.18],11);
   const claro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
     {maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(mapa);
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {maxZoom:19,attribution:'&copy; OpenStreetMap'});
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'});
   camPoly = L.featureGroup().addTo(mapa);
   camBol  = L.featureGroup().addTo(mapa);
   L.control.layers({'Mapa claro':claro,'OpenStreetMap':osm},{'Limites dos bairros':camPoly,'Bolhas de votos':camBol},{collapsed:true}).addTo(mapa);
@@ -174,6 +212,7 @@ async function carregar(){
   }
 }
 
+const sum = k => D.reduce((s,d)=>s+d[k],0);
 function lerPlanilha(buf){
   const wb = XLSX.read(buf), ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
@@ -188,21 +227,11 @@ function lerPlanilha(buf){
   });
   if(!T) T=[sum('f'),sum('l'),sum('f')-sum('l'),sum('b'),sum('nu'),sum('a')];
 }
-const sum = k => D.reduce((s,d)=>s+d[k],0);
 
-function popup(d){
-  return `<h2>${d.nome}</h2>
-  <div class="bar"><div style="width:${d.share*100}%;background:var(--azul)"></div><div style="flex:1;background:var(--vermelho)"></div></div>
-  <div class="kv">
-    <span class="k">Flávio Bolsonaro</span><b style="color:var(--azul)">${nf(d.f)} (${pc(d.share)})</b>
-    <span class="k">Lula</span><b style="color:var(--vermelho)">${nf(d.l)} (${pc(1-d.share)})</b>
-    <span class="k">Diferença</span><b>${nf(d.dif)}</b>
-    <span class="k">Brancos</span><span>${nf(d.b)}</span>
-    <span class="k">Nulos</span><span>${nf(d.nu)}</span>
-    <span class="k">Abstenções</span><span>${nf(d.a)} (${pc(d.abst)})</span>
-  </div>`;
-}
-const dica = d => `<b>${d.nome}</b><br>Flávio ${pc(d.share)} · Lula ${pc(1-d.share)}`;
+const popup = d => `<div class="pp"><h3>${d.nome}</h3>
+  <div class="vs"><i class="a" style="width:${d.share*100}%"></i><i class="b"></i></div>
+  <div class="pr"><span class="azul">Flávio <b>${nf(d.f)}</b> · ${pc(d.share)}</span><span class="verm">Lula <b>${nf(d.l)}</b> · ${pc(1-d.share)}</span></div></div>`;
+const dica = d => `<b>${d.nome}</b> · Flávio ${pc(d.share)} · Lula ${pc(1-d.share)}`;
 
 function construirCamadas(){
   const feats = F.map((gr,i)=>({type:'Feature',properties:{i},geometry:{type:'MultiPolygon',coordinates:gr.polys}}));
@@ -221,8 +250,8 @@ function construirCamadas(){
   });
   D.forEach(d=>{
     if(!d.pos) return;
-    d.bol = L.circleMarker(d.pos,{radius:8,weight:1.5,color:'#fff',fillOpacity:.8});
-    d.bol.bindTooltip(()=>dica(d)+(d.aprox?'<br><i>posição aproximada</i>':''));
+    d.bol = L.circleMarker(d.pos,{radius:8,weight:2,color:'#fff',fillOpacity:.85,className:'bol'});
+    d.bol.bindTooltip(()=>dica(d)+(d.aprox?' · posição aproximada':''));
     d.bol.bindPopup(()=>popup(d));
     d.bol.on('click',()=>escolher(d,false));
     camBol.addLayer(d.bol);
@@ -233,15 +262,14 @@ function construirCamadas(){
 
 function totais(){
   $('tot').innerHTML = [['Flávio Bolsonaro',T[0],'f'],['Lula',T[1],'l'],['Diferença',T[2],''],['Brancos',T[3],''],['Nulos',T[4],''],['Abstenções',T[5],'']]
-    .map(c=>`<div class="${c[2]}"><b>${nf(c[1])}</b><span>${c[0]}</span></div>`).join('');
+    .map(c=>`<div class="kpi ${c[2]}"><b>${nf(c[1])}</b><span>${c[0]}</span></div>`).join('');
 }
 function avisos(){
   const com = new Set(F.filter(f=>f.d).map(f=>f.d));
-  const sem = D.filter(d=>!com.has(d));
-  const semPos = D.filter(d=>!d.pos);
+  const sem = D.filter(d=>!com.has(d)), semPos = D.filter(d=>!d.pos);
   $('nota').className='nota';
   $('nota').textContent = sem.length
-    ? `Sem polígono próprio (bolha posicionada no local de votação): ${sem.filter(d=>d.pos).map(d=>d.nome).join(', ')||'nenhum'}.`
+    ? `Sem polígono próprio (bolha no local de votação): ${sem.filter(d=>d.pos).map(d=>d.nome).join(', ')||'nenhum'}.`
       + (semPos.length ? ` Sem posição no mapa (só na lista): ${semPos.map(d=>d.nome).join(', ')}.` : '')
     : '';
 }
@@ -251,44 +279,70 @@ function escala(){
   const v=D.map(d=>d[met]);
   if(met==='share'||met==='dif'){
     const c = met==='share'?.5:0, m = Math.max(...v.map(x=>Math.abs(x-c)))||1;
-    return {cor:x=>{const t=(x-c)/m;return t>=0?mix(BEGE,AZUL,t):mix(BEGE,VERM,-t)}, lo:c-m, hi:c+m,
-            grad:`linear-gradient(90deg,${mix(BEGE,VERM,1)},rgb(243,237,224),${mix(BEGE,AZUL,1)})`};
+    return {cor:x=>{const t=(x-c)/m;return t>=0?lerp(MEIO,AZUL,t):lerp(MEIO,VERM,-t)}, lo:c-m, hi:c+m,
+            grad:`linear-gradient(90deg,${rgb(VERM)},${rgb(MEIO)},${rgb(AZUL)})`};
   }
+  const [a,b] = met==='abst' ? [ABS0,ABS1] : [TOT0,TOT1];
   const mn=Math.min(...v), mx=Math.max(...v);
-  return {cor:x=>mix(BEGE,MARROM,(x-mn)/(mx-mn||1)), lo:mn, hi:mx,
-          grad:`linear-gradient(90deg,${mix(BEGE,MARROM,0)},${mix(BEGE,MARROM,1)})`};
+  return {cor:x=>lerp(a,b,(x-mn)/(mx-mn||1)), lo:mn, hi:mx, grad:`linear-gradient(90deg,${rgb(a)},${rgb(b)})`};
 }
 const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
-const raio = (v,max) => 5 + 33*Math.sqrt(Math.abs(v)/max);
+const raio = (v,max) => 6 + 34*Math.sqrt(Math.abs(v)/max);
+const ordenarBolhas = () => D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront());
 
-function ordenarBolhas(){ D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront()); }
+function animar(itens){
+  cancelAnimationFrame(anim);
+  const dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 380, ini = performance.now();
+  itens.forEach(i=>{ i.r0 = i.el._r ?? i.r1; i.c0 = i.el._c || i.c1; i.el.setStyle(i.estilo); });
+  const passo = agora=>{
+    const t = dur ? Math.min(1,(agora-ini)/dur) : 1, e = 1-Math.pow(1-t,3);
+    itens.forEach(i=>{
+      const c = i.c0.map((v,k)=>v+(i.c1[k]-v)*e);
+      i.el._c = c; i.el.setStyle({fillColor:rgb(c)});
+      if(i.r1!=null){ i.el._r = i.r0+(i.r1-i.r0)*e; i.el.setRadius(i.el._r); }
+    });
+    if(t<1) anim=requestAnimationFrame(passo); else ordenarBolhas();
+  };
+  anim = requestAnimationFrame(passo);
+}
 
 function atualizar(){
   const s=escala(), q=norm($('q').value), max=Math.max(...D.map(d=>Math.abs(d[tam])))||1;
-  const visivel = d => !q || norm(d.nome).includes(q);
+  const vis = d => !q || norm(d.nome).includes(q);
+  const itens=[];
   F.forEach(gr=>{
     if(!gr.layer) return;
-    if(!gr.d){ gr.layer.setStyle({color:'#b9a98a',weight:1,fillColor:'#e9e0cd',fillOpacity:.2}); return; }
-    const on = visivel(gr.d), isSel = gr.d===sel;
-    gr.layer.setStyle({color:isSel?'#26303d':'#3a4452', weight:isSel?3:1.3, opacity:on?.9:.25,
-                       fillColor:s.cor(gr.d[met]), fillOpacity:on?.38:.06});
+    if(!gr.d){ gr.layer.setStyle({color:'#aab4c8',weight:1,fillColor:'#dfe5f0',fillOpacity:.25}); return; }
+    const on=vis(gr.d), isSel=gr.d===sel;
+    itens.push({el:gr.layer, c1:s.cor(gr.d[met]),
+      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.55)', weight:isSel?3:1.2, opacity:on?1:.25, fillOpacity:on?.42:.06}});
   });
   D.forEach(d=>{
     if(!d.bol) return;
-    const on = visivel(d), isSel = d===sel;
-    d.bol.setRadius(raio(d[tam],max));
-    d.bol.setStyle({fillColor:s.cor(d[met]), fillOpacity:on?.82:.12, opacity:on?1:.2, color:isSel?'#26303d':'#fff', weight:isSel?3:1.5});
+    const on=vis(d), isSel=d===sel;
+    itens.push({el:d.bol, c1:s.cor(d[met]), r1:raio(d[tam],max),
+      estilo:{color:isSel?'#0b1b3a':'#fff', weight:isSel?3:2, opacity:on?1:.2, fillOpacity:on?.85:.12}});
   });
-  ordenarBolhas();
+  animar(itens);
+  $('lt').textContent = TIT_COR[met];
   $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi); $('lbar').style.background=s.grad;
-  const L2=[...D].sort((a,b)=>b[met]-a[met]).filter(visivel);
-  $('list').innerHTML=L2.map(d=>`<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fmt(d[met])}</em></div>`).join('');
+  const L2=[...D].sort((a,b)=>b[met]-a[met]).filter(vis);
+  $('list').innerHTML=L2.map(d=>{
+    const p=Math.max(4,(d[met]-s.lo)/((s.hi-s.lo)||1)*100);
+    return `<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fmt(d[met])}</em><b style="width:calc(${p}% - 12px);background:${rgb(s.cor(d[met]))}"></b></div>`;
+  }).join('');
 }
 
 function detalhe(){
-  if(!sel){$('det').innerHTML='<h2>Escolha um bairro</h2><p class="nota">Clique no mapa, numa bolha ou na lista. Tamanho da bolha: '+NOMES_TAM[tam]+'.</p>';return}
-  $('det').innerHTML = popup(sel) + (sel.pos?'':'<p class="nota">Este bairro não tem posição no mapa.</p>')
-    + `<p class="nota">Tamanho da bolha: ${NOMES_TAM[tam]}.</p>`;
+  const el=$('det');
+  if(!sel){ el.innerHTML='<h2>Escolha um bairro</h2><p class="nota" style="margin-left:0">Toque numa bolha, num bairro do mapa ou na lista abaixo.</p>'; return; }
+  const d=sel, f=d.f>=d.l;
+  el.innerHTML=`<div class="dh"><h2>${d.nome}</h2><span class="tag ${f?'f':'l'}">${f?'Flávio':'Lula'} +${nf(Math.abs(d.dif))}</span></div>
+  <div class="duelo"><div><b class="azul">${pc(d.share)}</b><span>Flávio · ${nf(d.f)}</span></div><div><b class="verm">${pc(1-d.share)}</b><span>Lula · ${nf(d.l)}</span></div></div>
+  <div class="vs"><i class="a" style="width:50%"></i><i class="b"></i></div>
+  <div class="stats"><div><b>${nf(d.b)}</b><span>Brancos</span></div><div><b>${nf(d.nu)}</b><span>Nulos</span></div><div><b>${pc(d.abst)}</b><span>Abstenção (${nf(d.a)})</span></div></div>
+  <p class="nota" style="margin-left:0">Percentuais calculados entre Flávio e Lula.${d.pos?'':' Este bairro não tem posição no mapa.'}</p>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=el.querySelector('.vs .a'); if(a) a.style.width=(d.share*100)+'%';}));
 }
 
 function escolher(d, voar=true){
@@ -301,11 +355,19 @@ function escolher(d, voar=true){
   }
 }
 
+function pills(id, ops, get, set){
+  const el=$(id);
+  el.innerHTML=ops.map(([k,t])=>`<button type="button" class="pill" data-k="${k}">${t}</button>`).join('');
+  const marcar=()=>[...el.children].forEach(b=>{const on=b.dataset.k===get();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
+  el.onclick=e=>{const b=e.target.closest('button'); if(b){set(b.dataset.k);marcar()}};
+  marcar();
+}
+pills('pTam',OPC_TAM,()=>tam,k=>{tam=k;atualizar()});
+pills('pCor',OPC_COR,()=>met,k=>{met=k;atualizar()});
 $('list').addEventListener('click',e=>{const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])});
 $('list').addEventListener('keydown',e=>{if(e.key==='Enter'){const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])}});
-$('met').onchange=e=>{met=e.target.value;atualizar()};
-$('size').onchange=e=>{tam=e.target.value;atualizar();detalhe()};
 $('q').oninput=atualizar;
+$('ver').onclick=()=>{ if(camPoly.getLayers().length) mapa.fitBounds(camPoly.getBounds(),{padding:[10,10]}) };
 carregar();
 </script>
 </body>
