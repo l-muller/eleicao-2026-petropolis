@@ -317,7 +317,7 @@ function escala(){
           grad:`linear-gradient(90deg,${rgb(ABS0)},${rgb(ABS1)})`, titulo:'% de abstenção'};
 }
 const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
-const raio = (v,max) => 4 + 28*Math.sqrt(Math.abs(v)/max);
+const raio = (v,max) => 3 + 21*Math.sqrt(Math.abs(v)/max);
 const ordenarBolhas = () => D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront());
 
 function animar(itens){
