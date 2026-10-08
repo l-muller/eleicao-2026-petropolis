@@ -3,61 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Petrópolis – resultado por bairro</title>
+<title>Petrópolis – votos por bairro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bege:#f3ede0; --bege-2:#e9e0cd; --bege-3:#d9ccb2; --papel:#faf6ec;
+  --bege:#f3ede0; --bege-2:#e9e0cd; --papel:#faf6ec;
   --azul:#1d4f91; --vermelho:#b5372f; --tinta:#26303d; --suave:#6f6a5e; --linha:#d8ccb4;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bege);color:var(--tinta);font:15px/1.5 "Public Sans",system-ui,sans-serif}
-.w{max-width:1200px;margin:0 auto;padding:22px 16px 40px}
-h1{font:600 30px/1.15 Fraunces,Georgia,serif;margin:0 0 6px;letter-spacing:-.01em}
-.sub{margin:0 0 18px;color:var(--suave);max-width:60ch}
-.tot{display:flex;flex-wrap:wrap;gap:0;margin-bottom:18px;border:1px solid var(--linha);border-radius:6px;background:var(--papel);overflow:hidden}
-.tot div{padding:10px 16px;border-right:1px solid var(--linha);flex:1 1 120px}
+.w{max-width:1280px;margin:0 auto;padding:20px 16px 40px}
+h1{font:600 28px/1.15 Fraunces,Georgia,serif;margin:0 0 4px}
+.sub{margin:0 0 16px;color:var(--suave)}
+.tot{display:flex;flex-wrap:wrap;margin-bottom:14px;border:1px solid var(--linha);border-radius:6px;background:var(--papel);overflow:hidden}
+.tot div{padding:9px 16px;border-right:1px solid var(--linha);flex:1 1 120px}
 .tot div:last-child{border-right:0}
-.tot b{display:block;font:600 20px Fraunces,Georgia,serif}
+.tot b{display:block;font:600 19px Fraunces,Georgia,serif}
 .tot span{font-size:12px;color:var(--suave)}
 .tot .f b{color:var(--azul)} .tot .l b{color:var(--vermelho)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 select,input{font:inherit;color:var(--tinta);background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:8px 10px}
 select:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var(--azul);outline-offset:1px}
-.g{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:16px}
-@media(max-width:860px){.g{grid-template-columns:1fr}}
-.box{background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:12px;min-width:0}
-svg{display:block;width:100%;height:auto}
-.b{stroke:#fff;stroke-width:.8;stroke-linejoin:round;cursor:pointer;vector-effect:non-scaling-stroke}
-.b.sem{fill:var(--bege-2);cursor:default}
-.b.dim{opacity:.2}
-.b.sel{stroke:var(--tinta);stroke-width:2.2}
-.b:hover:not(.sem){stroke:var(--tinta);stroke-width:1.6}
+.g{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px}
+@media(max-width:900px){.g{grid-template-columns:1fr}}
+.box{background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:10px;min-width:0}
+#mapa{height:min(74vh,700px);min-height:430px;border-radius:4px;background:var(--bege-2)}
 .leg{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--suave)}
 .leg i{flex:1;max-width:260px;height:9px;border-radius:2px}
 .nota{font-size:12px;color:var(--suave);margin-top:8px}
 .nota.err{color:var(--vermelho)}
-h2{font:600 20px Fraunces,Georgia,serif;margin:0 0 8px}
-.bar{display:flex;height:14px;border-radius:2px;overflow:hidden;margin:8px 0 12px}
-.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px}
+h2{font:600 19px Fraunces,Georgia,serif;margin:0 0 6px}
+.bar{display:flex;height:12px;border-radius:2px;overflow:hidden;margin:6px 0 10px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:2px 12px}
 .kv .k{color:var(--suave)}
-.list{margin-top:14px;max-height:430px;overflow:auto;border-top:1px solid var(--linha)}
+.list{margin-top:12px;max-height:380px;overflow:auto;border-top:1px solid var(--linha)}
 .it{display:flex;justify-content:space-between;gap:8px;padding:7px 4px;border-bottom:1px solid var(--linha);cursor:pointer}
 .it:hover,.it.sel{background:var(--bege-2)}
 .it em{font-style:normal;color:var(--suave);font-variant-numeric:tabular-nums}
-#tip{position:fixed;display:none;pointer-events:none;z-index:9;background:var(--tinta);color:var(--papel);padding:6px 9px;border-radius:4px;font-size:12px}
+.leaflet-popup-content{font:14px/1.45 "Public Sans",system-ui,sans-serif;margin:12px 14px;min-width:200px}
+.leaflet-popup-content-wrapper{background:var(--papel);color:var(--tinta);border-radius:6px}
+.leaflet-popup-tip{background:var(--papel)}
+.leaflet-tooltip{font:12px "Public Sans",system-ui,sans-serif;color:var(--tinta);background:var(--papel);border-color:var(--linha)}
 </style>
 </head>
 <body>
 <div class="w">
-  <h1>Petrópolis: resultado por bairro</h1>
-  <p class="sub">Flávio Bolsonaro e Lula em cada bairro. Passe o mouse ou toque para ver os números.</p>
+  <h1>Petrópolis: votos por bairro</h1>
+  <p class="sub">Flávio Bolsonaro e Lula. Clique num bairro ou numa bolha para ver os números.</p>
   <div class="tot" id="tot"></div>
   <div class="ctl">
-    <select id="met" aria-label="Métrica de cor">
+    <select id="size" aria-label="Tamanho da bolha">
+      <option value="tot">Bolha: total de votos</option>
+      <option value="f">Bolha: votos do Flávio</option>
+      <option value="l">Bolha: votos do Lula</option>
+      <option value="dif">Bolha: diferença de votos</option>
+      <option value="a">Bolha: abstenções</option>
+    </select>
+    <select id="met" aria-label="Cor">
       <option value="share">Cor: % Flávio contra Lula</option>
       <option value="dif">Cor: diferença de votos</option>
       <option value="abst">Cor: % de abstenção</option>
@@ -67,49 +72,105 @@ h2{font:600 20px Fraunces,Georgia,serif;margin:0 0 8px}
   </div>
   <div class="g">
     <div class="box">
-      <svg id="map" role="img" aria-label="Mapa dos bairros de Petrópolis"></svg>
+      <div id="mapa"></div>
       <div class="leg"><span id="lmin"></span><i id="lbar"></i><span id="lmax"></span></div>
       <div class="nota" id="nota"></div>
     </div>
     <div class="box"><div id="det"></div><div class="list" id="list"></div></div>
   </div>
 </div>
-<div id="tip"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /* ===== CONFIGURAÇÃO ===== */
 const ARQ_GEOJSON = 'bairros2025-votos-corr_rows_112.geojson';
 const ARQ_XLSX    = 'Mapa por Bairro.xlsx';
-// Campo do GeoJSON com o nome do bairro. null = detecta sozinho.
-const CAMPO_NOME  = 'bairro';
-// Se algum nome da planilha for diferente do GeoJSON, mapeie aqui:
-// 'NOME NA PLANILHA': 'NOME NO GEOJSON'
-const APELIDOS = {
+const CAMPO_NOME  = 'bairro';           // campo do GeoJSON com o nome do bairro
+const APELIDOS    = {                   // 'nome na planilha': 'nome no GeoJSON'
   'Duarte Silveira': 'DUARTE DA SILVEIRA',
 };
 /* ========================= */
 
+const norm = s => String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
+const areaAnel = r => { let a=0; for(let i=0;i<r.length-1;i++) a+=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1]; return a/2; };
+function centroide(r){            // devolve [lat, lng]
+  let A=0,cx=0,cy=0;
+  for(let i=0;i<r.length-1;i++){const c=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1];A+=c;cx+=(r[i][0]+r[i+1][0])*c;cy+=(r[i][1]+r[i+1][1])*c}
+  A/=2; return A ? [cy/(6*A), cx/(6*A)] : [r[0][1], r[0][0]];
+}
+function agrupar(g, D){
+  const idx = new Map(D.map(d=>[norm(APELIDOS[d.nome]||d.nome), d]));
+  const grupos = new Map();
+  g.features.forEach(f=>{                       // o GeoJSON tem 1 linha por local de votação
+    if(!f.geometry) return;
+    const nome = f.properties[CAMPO_NOME], k = norm(nome);
+    if(!grupos.has(k)) grupos.set(k,{nome, d: idx.get(k)||null, seen:new Set(), polys:[]});
+    const gr = grupos.get(k);
+    const polys = f.geometry.type==='Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    const chave = JSON.stringify(polys);
+    if(gr.seen.has(chave)) return;              // mesma geometria repetida
+    gr.seen.add(chave); gr.polys.push(...polys);
+  });
+  const F = [...grupos.values()];
+  F.forEach(gr=>{
+    let best=null, ba=-1;
+    gr.polys.forEach(p=>{const a=Math.abs(areaAnel(p[0])); if(a>ba){ba=a;best=p}});
+    gr.pos = centroide(best[0]);
+    if(gr.d) gr.d.pos = gr.pos;
+  });
+  // bairros da planilha sem polígono: usa a média dos locais de votação
+  const soma = new Map();
+  g.features.forEach(f=>{
+    const d = idx.get(norm(f.properties.BAIRRO_LOC));
+    if(!d || d.pos) return;
+    const la=parseFloat(f.properties.LATITUDE), lo=parseFloat(f.properties.LONGITUDE);
+    if(isNaN(la)||isNaN(lo)) return;
+    const s = soma.get(d)||{la:0,lo:0,n:0}; s.la+=la; s.lo+=lo; s.n++; soma.set(d,s);
+  });
+  soma.forEach((s,d)=>{ d.pos=[s.la/s.n, s.lo/s.n]; d.aprox=true; });
+  return F;
+}
+
 const $ = id => document.getElementById(id);
 const nf = x => x.toLocaleString('pt-BR');
 const pc = x => (x*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
-const norm = s => String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
 const BEGE=[243,237,224], AZUL=[29,79,145], VERM=[181,55,47], MARROM=[138,98,52];
 const mix=(a,b,t)=>{t=Math.max(0,Math.min(1,t));return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`};
+const NOMES_TAM = {tot:'total de votos',f:'votos do Flávio',l:'votos do Lula',dif:'diferença de votos',a:'abstenções'};
 
-let F=[], D=[], T=null, sel=null, met='share', W=900, H=700;
+let D=[], F=[], T=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol;
 
+/* ---------- mapa base ---------- */
+function iniciarMapa(){
+  mapa = L.map('mapa',{zoomControl:true}).setView([-22.5,-43.18],11);
+  const claro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    {maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(mapa);
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:19,attribution:'&copy; OpenStreetMap'});
+  camPoly = L.featureGroup().addTo(mapa);
+  camBol  = L.featureGroup().addTo(mapa);
+  L.control.layers({'Mapa claro':claro,'OpenStreetMap':osm},{'Limites dos bairros':camPoly,'Bolhas de votos':camBol},{collapsed:true}).addTo(mapa);
+  mapa.on('overlayadd',ordenarBolhas);
+}
+
+/* ---------- dados ---------- */
 async function carregar(){
   try{
+    iniciarMapa();
     const [g, xb] = await Promise.all([
       fetch(encodeURI(ARQ_GEOJSON)).then(r=>{if(!r.ok)throw new Error(ARQ_GEOJSON);return r.json()}),
       fetch(encodeURI(ARQ_XLSX)).then(r=>{if(!r.ok)throw new Error(ARQ_XLSX);return r.arrayBuffer()})
     ]);
     lerPlanilha(xb);
-    prepararMapa(g);
-    desenhar(); detalhe();
+    F = agrupar(g, D);
+    construirCamadas();
+    totais(); avisos();
+    atualizar(); detalhe();
   }catch(e){
     $('nota').className='nota err';
-    $('nota').textContent='Não consegui carregar "'+e.message+'". Confira o nome do arquivo e abra a página pelo GitHub Pages ou por um servidor local (não funciona abrindo o arquivo direto).';
+    $('nota').textContent='Não consegui carregar "'+e.message+'". Confira o nome do arquivo e abra a página pelo GitHub Pages ou por um servidor local.';
+    console.error(e);
   }
 }
 
@@ -119,84 +180,18 @@ function lerPlanilha(buf){
   const h = rows.findIndex(r=>r && norm(r[0])==='BAIRRO');
   if(h<0) throw new Error(ARQ_XLSX+' (cabeçalho "Bairro" não encontrado)');
   const t = h>0 ? rows[h-1].slice(1,7) : null;
-  if(t && t.every(v=>typeof v==='number')) T = t;
+  if(t && t.every(v=>typeof v==='number')) T=t;
   D = rows.slice(h+1).filter(r=>r[0] && typeof r[1]==='number').map(r=>{
     const d={nome:String(r[0]).trim(),f:r[1],l:r[2],dif:r[3],b:r[4],nu:r[5],a:r[6]};
     d.v=d.f+d.l; d.tot=d.v+d.b+d.nu; d.share=d.f/d.v; d.abst=d.a/(d.tot+d.a);
     return d;
   });
+  if(!T) T=[sum('f'),sum('l'),sum('f')-sum('l'),sum('b'),sum('nu'),sum('a')];
 }
+const sum = k => D.reduce((s,d)=>s+d[k],0);
 
-function campoNome(props){
-  if(CAMPO_NOME) return CAMPO_NOME;
-  const pref=['nome','name','bairro','nm_bairro','nome_bairro','NOME','NAME','BAIRRO','NM_BAIRRO'];
-  for(const p of pref) if(p in props) return p;
-  return Object.keys(props).find(k=>typeof props[k]==='string');
-}
-
-function prepararMapa(g){
-  const feats = g.features.filter(f=>f.geometry);
-  const campo = campoNome(feats[0].properties);
-  const idx = new Map(D.map(d=>[norm(APELIDOS[d.nome]||d.nome), d]));
-  // limites
-  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
-  const pts = f => f.geometry.type==='Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
-  feats.forEach(f=>pts(f).forEach(p=>p[0].forEach(([x,y])=>{x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)})));
-  if(Math.abs(x0)>180||Math.abs(y0)>90) throw new Error(ARQ_GEOJSON+' (coordenadas fora de latitude/longitude; reprojete para WGS84)');
-  const c = Math.cos((y0+y1)/2*Math.PI/180);
-  const sx = (x1-x0)*c, sy = y1-y0, k = (W-20)/sx;
-  H = Math.round(sy*k+20);
-  const X = x=>10+(x-x0)*c*k, Y = y=>10+(y1-y)*k;
-  const grupos = new Map();
-  feats.forEach(f=>{
-    const nome = f.properties[campo], chave = norm(nome);
-    if(!grupos.has(chave)) grupos.set(chave,{nome, d: idx.get(chave)||null, geoms:new Set(), path:''});
-    const gr = grupos.get(chave), gk = JSON.stringify(f.geometry);
-    if(gr.geoms.has(gk)) return;            // mesma geometria repetida: ignora
-    gr.geoms.add(gk);
-    gr.path += pts(f).map(poly=>poly.map(r=>'M'+r.map(([x,y])=>X(x).toFixed(1)+' '+Y(y).toFixed(1)).join('L')+'Z').join('')).join('');
-  });
-  F = [...grupos.values()];
-  $('map').setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const achados = new Set(F.filter(f=>f.d).map(f=>f.d));
-  const faltam = D.filter(d=>!achados.has(d));
-  $('nota').className='nota';
-  $('nota').textContent = faltam.length
-    ? `${faltam.length} bairro(s) da planilha sem polígono próprio no GeoJSON (aparecem só na lista): ${faltam.map(d=>d.nome).join(', ')}. Áreas em bege claro não têm dados na planilha.`
-    : 'Áreas em bege claro não têm dados na planilha.';
-  if(!T) T=[D.reduce((s,d)=>s+d.f,0),D.reduce((s,d)=>s+d.l,0),0,D.reduce((s,d)=>s+d.b,0),D.reduce((s,d)=>s+d.nu,0),D.reduce((s,d)=>s+d.a,0)];
-  $('tot').innerHTML = [['Flávio Bolsonaro',T[0],'f'],['Lula',T[1],'l'],['Diferença',T[2]||T[0]-T[1],''],['Brancos',T[3],''],['Nulos',T[4],''],['Abstenções',T[5],'']]
-    .map(c=>`<div class="${c[2]}"><b>${nf(c[1])}</b><span>${c[0]}</span></div>`).join('');
-}
-
-function escala(){
-  const v=D.map(d=>d[met]);
-  if(met==='share'||met==='dif'){
-    const c = met==='share'?.5:0, m=Math.max(...v.map(x=>Math.abs(x-c)))||1;
-    return {cor:x=>{const t=(x-c)/m;return t>=0?mix(BEGE,AZUL,t):mix(BEGE,VERM,-t)},
-            lo:c-m, hi:c+m, grad:`linear-gradient(90deg,${mix(BEGE,VERM,1)},${mix(BEGE,[243,237,224],0)},${mix(BEGE,AZUL,1)})`};
-  }
-  const mn=Math.min(...v), mx=Math.max(...v);
-  return {cor:x=>mix(BEGE,MARROM,(x-mn)/(mx-mn||1)), lo:mn, hi:mx, grad:`linear-gradient(90deg,${mix(BEGE,MARROM,0)},${mix(BEGE,MARROM,1)})`};
-}
-const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
-
-function desenhar(){
-  const s=escala(), q=norm($('q').value);
-  $('map').innerHTML = F.map((f,i)=>{
-    const dim = q && !(f.d && norm(f.d.nome).includes(q)) ? ' dim':'';
-    if(!f.d) return `<path class="b sem${dim}" d="${f.path}" fill-rule="evenodd" data-i="${i}"/>`;
-    return `<path class="b${f.d===sel?' sel':''}${dim}" d="${f.path}" fill-rule="evenodd" fill="${s.cor(f.d[met])}" data-i="${i}"/>`;
-  }).join('');
-  $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi); $('lbar').style.background=s.grad;
-  const L=[...D].sort((a,b)=>b[met]-a[met]).filter(d=>!q||norm(d.nome).includes(q));
-  $('list').innerHTML=L.map(d=>`<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fmt(d[met])}</em></div>`).join('');
-}
-
-function detalhe(){
-  const d=sel;
-  if(!d){$('det').innerHTML='<h2>Escolha um bairro</h2><p class="nota">Clique no mapa ou na lista.</p>';return}
-  $('det').innerHTML=`<h2>${d.nome}</h2>
+function popup(d){
+  return `<h2>${d.nome}</h2>
   <div class="bar"><div style="width:${d.share*100}%;background:var(--azul)"></div><div style="flex:1;background:var(--vermelho)"></div></div>
   <div class="kv">
     <span class="k">Flávio Bolsonaro</span><b style="color:var(--azul)">${nf(d.f)} (${pc(d.share)})</b>
@@ -207,20 +202,110 @@ function detalhe(){
     <span class="k">Abstenções</span><span>${nf(d.a)} (${pc(d.abst)})</span>
   </div>`;
 }
+const dica = d => `<b>${d.nome}</b><br>Flávio ${pc(d.share)} · Lula ${pc(1-d.share)}`;
 
-function escolher(d){sel=d;desenhar();detalhe()}
-$('map').addEventListener('click',e=>{const i=e.target.dataset.i;if(i!=null&&F[i].d)escolher(F[i].d)});
+function construirCamadas(){
+  const feats = F.map((gr,i)=>({type:'Feature',properties:{i},geometry:{type:'MultiPolygon',coordinates:gr.polys}}));
+  L.geoJSON({type:'FeatureCollection',features:feats},{
+    onEachFeature:(f,layer)=>{
+      const gr = F[f.properties.i]; gr.layer = layer;
+      camPoly.addLayer(layer);
+      if(gr.d){
+        layer.bindTooltip(()=>dica(gr.d),{sticky:true});
+        layer.bindPopup(()=>popup(gr.d));
+        layer.on('click',()=>escolher(gr.d,false));
+      }else{
+        layer.bindTooltip(gr.nome+' (sem dados)',{sticky:true});
+      }
+    }
+  });
+  D.forEach(d=>{
+    if(!d.pos) return;
+    d.bol = L.circleMarker(d.pos,{radius:8,weight:1.5,color:'#fff',fillOpacity:.8});
+    d.bol.bindTooltip(()=>dica(d)+(d.aprox?'<br><i>posição aproximada</i>':''));
+    d.bol.bindPopup(()=>popup(d));
+    d.bol.on('click',()=>escolher(d,false));
+    camBol.addLayer(d.bol);
+  });
+  if(camPoly.getLayers().length) mapa.fitBounds(camPoly.getBounds(),{padding:[10,10]});
+  setTimeout(()=>mapa.invalidateSize(),200);
+}
+
+function totais(){
+  $('tot').innerHTML = [['Flávio Bolsonaro',T[0],'f'],['Lula',T[1],'l'],['Diferença',T[2],''],['Brancos',T[3],''],['Nulos',T[4],''],['Abstenções',T[5],'']]
+    .map(c=>`<div class="${c[2]}"><b>${nf(c[1])}</b><span>${c[0]}</span></div>`).join('');
+}
+function avisos(){
+  const com = new Set(F.filter(f=>f.d).map(f=>f.d));
+  const sem = D.filter(d=>!com.has(d));
+  const semPos = D.filter(d=>!d.pos);
+  $('nota').className='nota';
+  $('nota').textContent = sem.length
+    ? `Sem polígono próprio (bolha posicionada no local de votação): ${sem.filter(d=>d.pos).map(d=>d.nome).join(', ')||'nenhum'}.`
+      + (semPos.length ? ` Sem posição no mapa (só na lista): ${semPos.map(d=>d.nome).join(', ')}.` : '')
+    : '';
+}
+
+/* ---------- cores e tamanhos ---------- */
+function escala(){
+  const v=D.map(d=>d[met]);
+  if(met==='share'||met==='dif'){
+    const c = met==='share'?.5:0, m = Math.max(...v.map(x=>Math.abs(x-c)))||1;
+    return {cor:x=>{const t=(x-c)/m;return t>=0?mix(BEGE,AZUL,t):mix(BEGE,VERM,-t)}, lo:c-m, hi:c+m,
+            grad:`linear-gradient(90deg,${mix(BEGE,VERM,1)},rgb(243,237,224),${mix(BEGE,AZUL,1)})`};
+  }
+  const mn=Math.min(...v), mx=Math.max(...v);
+  return {cor:x=>mix(BEGE,MARROM,(x-mn)/(mx-mn||1)), lo:mn, hi:mx,
+          grad:`linear-gradient(90deg,${mix(BEGE,MARROM,0)},${mix(BEGE,MARROM,1)})`};
+}
+const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
+const raio = (v,max) => 5 + 33*Math.sqrt(Math.abs(v)/max);
+
+function ordenarBolhas(){ D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront()); }
+
+function atualizar(){
+  const s=escala(), q=norm($('q').value), max=Math.max(...D.map(d=>Math.abs(d[tam])))||1;
+  const visivel = d => !q || norm(d.nome).includes(q);
+  F.forEach(gr=>{
+    if(!gr.layer) return;
+    if(!gr.d){ gr.layer.setStyle({color:'#b9a98a',weight:1,fillColor:'#e9e0cd',fillOpacity:.2}); return; }
+    const on = visivel(gr.d), isSel = gr.d===sel;
+    gr.layer.setStyle({color:isSel?'#26303d':'#3a4452', weight:isSel?3:1.3, opacity:on?.9:.25,
+                       fillColor:s.cor(gr.d[met]), fillOpacity:on?.38:.06});
+  });
+  D.forEach(d=>{
+    if(!d.bol) return;
+    const on = visivel(d), isSel = d===sel;
+    d.bol.setRadius(raio(d[tam],max));
+    d.bol.setStyle({fillColor:s.cor(d[met]), fillOpacity:on?.82:.12, opacity:on?1:.2, color:isSel?'#26303d':'#fff', weight:isSel?3:1.5});
+  });
+  ordenarBolhas();
+  $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi); $('lbar').style.background=s.grad;
+  const L2=[...D].sort((a,b)=>b[met]-a[met]).filter(visivel);
+  $('list').innerHTML=L2.map(d=>`<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fmt(d[met])}</em></div>`).join('');
+}
+
+function detalhe(){
+  if(!sel){$('det').innerHTML='<h2>Escolha um bairro</h2><p class="nota">Clique no mapa, numa bolha ou na lista. Tamanho da bolha: '+NOMES_TAM[tam]+'.</p>';return}
+  $('det').innerHTML = popup(sel) + (sel.pos?'':'<p class="nota">Este bairro não tem posição no mapa.</p>')
+    + `<p class="nota">Tamanho da bolha: ${NOMES_TAM[tam]}.</p>`;
+}
+
+function escolher(d, voar=true){
+  sel=d; atualizar(); detalhe();
+  if(!voar) return;
+  if(d.bol){ mapa.flyTo(d.pos,Math.max(mapa.getZoom(),13),{duration:.6}); d.bol.openPopup(); }
+  else{
+    const gr=F.find(f=>f.d===d);
+    if(gr&&gr.layer){ mapa.fitBounds(gr.layer.getBounds(),{maxZoom:14}); gr.layer.openPopup(); }
+  }
+}
+
 $('list').addEventListener('click',e=>{const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])});
 $('list').addEventListener('keydown',e=>{if(e.key==='Enter'){const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])}});
-const tip=$('tip');
-$('map').addEventListener('mousemove',e=>{
-  const i=e.target.dataset.i; if(i==null){tip.style.display='none';return}
-  const f=F[i]; tip.style.display='block'; tip.style.left=e.clientX+12+'px'; tip.style.top=e.clientY+12+'px';
-  tip.textContent = f.d ? `${f.d.nome}: Flávio ${pc(f.d.share)}, Lula ${pc(1-f.d.share)}` : `${f.nome} (sem dados)`;
-});
-$('map').addEventListener('mouseleave',()=>tip.style.display='none');
-$('met').onchange=e=>{met=e.target.value;desenhar()};
-$('q').oninput=desenhar;
+$('met').onchange=e=>{met=e.target.value;atualizar()};
+$('size').onchange=e=>{tam=e.target.value;atualizar();detalhe()};
+$('q').oninput=atualizar;
 carregar();
 </script>
 </body>
