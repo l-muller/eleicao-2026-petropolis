@@ -9,17 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
+/* Azul e vermelho são reservados para os candidatos. Todo o resto é neutro. */
 :root{
-  --ink:#0b1b3a; --mut:#5d6b86; --bg:#f4f6fb; --card:#fff; --line:#e3e8f2;
-  --blue:#2f5bff; --red:#ff3b4e; --amber:#ff7a1a; --chip:#eaeefb;
+  --ink:#0b1b3a; --mut:#5d6b86; --bg:#f4f6fb; --card:#fff; --line:#e3e8f2; --chip:#eaeefb;
+  --blue:#2f5bff; --red:#ff3b4e;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "DM Sans",system-ui,sans-serif}
 .w{max-width:1360px;margin:0 auto;padding:22px 18px 44px}
-header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px}
+header{margin-bottom:18px}
 h1{font:700 32px/1.05 Sora,system-ui,sans-serif;letter-spacing:-.025em;margin:0}
-h1 span{color:var(--blue)}
-.sub{margin:6px 0 0;color:var(--mut)}
+.sub{margin:6px 0 0;color:var(--mut);max-width:70ch}
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -28,27 +28,31 @@ h1 span{color:var(--blue)}
 .kpi b{display:block;font:700 22px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .kpi span{font-size:12px;color:var(--mut)}
 .kpi.f b{color:var(--blue)} .kpi.l b{color:var(--red)}
-.bar-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}
+.bar-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}
 .grp{display:flex;align-items:center;gap:8px;min-width:0}
 .grp>label{font-size:12px;color:var(--mut);white-space:nowrap}
 .pills{display:flex;gap:3px;background:var(--chip);border-radius:999px;padding:3px;overflow-x:auto;max-width:100%}
 .pill{border:0;background:transparent;color:var(--ink);font:500 13px "DM Sans",sans-serif;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
-.pill:hover{background:rgba(47,91,255,.12)}
+.pill:hover{background:rgba(11,27,58,.08)}
 .pill.on{background:var(--ink);color:#fff}
-.pill:focus-visible,.it:focus-visible,#q:focus-visible,#ver:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.pill:focus-visible,.it:focus-visible,#q:focus-visible,#ver:focus-visible,.link:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 #q{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 14px;color:var(--ink);width:190px}
 #ver{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font:500 13px "DM Sans",sans-serif;color:var(--ink);cursor:pointer}
-#ver:hover{border-color:var(--blue);color:var(--blue)}
+#ver:hover{border-color:var(--ink)}
 .sp{flex:1}
 .g{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:14px;align-items:start}
 @media(max-width:980px){.g{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;min-width:0}
 .mapwrap{position:relative;padding:8px}
 #mapa{height:min(76vh,760px);min-height:460px;border-radius:10px;background:#e9edf5}
-.legend{position:absolute;left:20px;bottom:20px;z-index:800;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-radius:12px;padding:8px 12px;box-shadow:0 4px 18px rgba(11,27,58,.15);font-size:12px;color:var(--mut);min-width:190px}
-.legend b{display:block;color:var(--ink);font-size:12px;margin-bottom:5px}
-.legend i{display:block;height:8px;border-radius:99px}
-.legend div{display:flex;justify-content:space-between;margin-top:3px;font-variant-numeric:tabular-nums}
+.legend{position:absolute;left:20px;bottom:20px;z-index:800;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-radius:12px;padding:10px 12px;box-shadow:0 4px 18px rgba(11,27,58,.15);font-size:12px;color:var(--mut);width:220px}
+.legend b{display:block;color:var(--ink);font-size:12px;margin-bottom:5px;line-height:1.3}
+.legend i.g1{display:block;height:8px;border-radius:99px}
+.legend .tk{display:flex;justify-content:space-between;margin-top:3px;font-variant-numeric:tabular-nums}
+.legend hr{border:0;border-top:1px solid var(--line);margin:9px 0 8px}
+.sz{display:flex;align-items:flex-end;gap:12px;margin-top:6px}
+.sz div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-variant-numeric:tabular-nums}
+.sz i{display:block;border:1.5px solid rgba(11,27,58,.75);border-radius:50%;background:rgba(11,27,58,.12)}
 .nota{font-size:12px;color:var(--mut);margin:8px 10px 4px}
 .nota.err{color:var(--red)}
 .side{position:sticky;top:12px;padding:16px}
@@ -66,11 +70,13 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
 .vs{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--red)}
 .vs .a{background:var(--blue);transition:width .7s cubic-bezier(.2,.8,.2,1)}
 .vs .b{flex:1;background:var(--red)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.cmp{font-size:13px;margin:10px 0 0;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
 .stats div{background:var(--bg);border-radius:12px;padding:8px 10px}
 .stats b{display:block;font:700 15px Sora,system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .stats span{font-size:11px;color:var(--mut)}
-.list{margin-top:14px;max-height:360px;overflow:auto;border-top:1px solid var(--line)}
+.link{border:0;background:none;color:var(--ink);font:500 13px "DM Sans",sans-serif;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px}
+.list{margin-top:14px;max-height:340px;overflow:auto;border-top:1px solid var(--line)}
 .it{position:relative;display:flex;justify-content:space-between;gap:8px;padding:8px 6px 11px;cursor:pointer;border-radius:8px;transition:background .15s}
 .it:hover,.it.sel{background:var(--bg)}
 .it em{font-style:normal;color:var(--mut);font-variant-numeric:tabular-nums;font-size:13px}
@@ -81,23 +87,21 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
 .pp .pr{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:13px}
 .leaflet-tooltip{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:6px 10px;font:500 12px "DM Sans",sans-serif;box-shadow:0 4px 14px rgba(11,27,58,.3)}
 .leaflet-tooltip:before{display:none}
-.bol{filter:drop-shadow(0 2px 4px rgba(11,27,58,.35))}
+@media(max-width:560px){.legend{left:14px;bottom:14px;width:190px}}
 </style>
 </head>
 <body>
 <div class="w">
   <header>
-    <div>
-      <h1>Petrópolis em <span>votos</span></h1>
-      <p class="sub">Flávio Bolsonaro × Lula, bairro a bairro. Toque numa bolha para ver o duelo.</p>
-    </div>
+    <h1>Petrópolis em votos</h1>
+    <p class="sub">A cor de cada bairro mostra onde o Flávio está acima ou abaixo da média da cidade. O tamanho da bolha mostra o peso do bairro em votos.</p>
   </header>
 
   <div class="kpis" id="tot"></div>
 
   <div class="bar-ctl">
-    <div class="grp"><label>Tamanho</label><div class="pills" id="pTam"></div></div>
-    <div class="grp"><label>Cor</label><div class="pills" id="pCor"></div></div>
+    <div class="grp"><label>Tamanho da bolha</label><div class="pills" id="pTam"></div></div>
+    <div class="grp"><label>Cor do bairro</label><div class="pills" id="pCor"></div></div>
     <span class="sp"></span>
     <input id="q" type="search" placeholder="Buscar bairro" aria-label="Buscar bairro">
     <button id="ver" type="button">Ver tudo</button>
@@ -107,7 +111,12 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
     <div class="card">
       <div class="mapwrap">
         <div id="mapa"></div>
-        <div class="legend"><b id="lt"></b><i id="lbar"></i><div><span id="lmin"></span><span id="lmax"></span></div></div>
+        <div class="legend">
+          <b id="lt"></b><i class="g1" id="lbar"></i>
+          <div class="tk"><span id="lmin"></span><span id="lmid"></span><span id="lmax"></span></div>
+          <hr>
+          <b id="lst"></b><div class="sz" id="lsz"></div>
+        </div>
       </div>
       <div class="nota" id="nota"></div>
     </div>
@@ -170,25 +179,36 @@ function agrupar(g, D){
 const $ = id => document.getElementById(id);
 const nf = x => x.toLocaleString('pt-BR');
 const pc = x => (x*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
-const MEIO=[242,245,252], AZUL=[47,91,255], VERM=[255,59,78];
-const TOT0=[226,234,255], TOT1=[27,47,168], ABS0=[255,236,214], ABS1=[255,122,26];
+const pp = x => (x>=0?'+':'−')+Math.abs(x*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+' p.p.';
+const MEIO=[242,245,252], AZUL=[47,91,255], VERM=[255,59,78], ABS0=[255,236,214], ABS1=[255,122,26], TINTA=[11,27,58];
 const lerp=(a,b,t)=>{t=Math.max(0,Math.min(1,t));return a.map((v,i)=>v+(b[i]-v)*t)};
 const rgb=a=>`rgb(${a.map(Math.round).join(',')})`;
-const OPC_TAM=[['tot','Total'],['f','Flávio'],['l','Lula'],['dif','Diferença'],['a','Abstenções']];
-const OPC_COR=[['share','% Flávio'],['dif','Diferença'],['abst','Abstenção'],['tot','Total']];
-const TIT_COR={share:'% Flávio contra Lula',dif:'Diferença de votos',abst:'% de abstenção',tot:'Total de votos'};
+const OPC_TAM=[['tot','Votos'],['a','Abstenções']];
+const OPC_COR=[['share','Flávio vs. média'],['vant','Vantagem em votos'],['abst','Abstenção']];
+const TIT_TAM={tot:'Tamanho: votos computados',a:'Tamanho: abstenções'};
 
-let D=[], F=[], T=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol, anim=0;
+let D=[], F=[], T=null, CID=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol, anim=0;
 
-/* ---------- mapa base ---------- */
+/* ---------- mapa base (Esri, sem chave de API) ---------- */
 function iniciarMapa(){
-  mapa = L.map('mapa',{zoomControl:true}).setView([-22.5,-43.18],11);
-  const claro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(mapa);
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'});
+  mapa = L.map('mapa',{zoomControl:true, maxZoom:19}).setView([-22.5,-43.18],11);
+  const esri = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+  const cinza = L.layerGroup([
+    L.tileLayer(esri+'Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      {maxNativeZoom:16, maxZoom:19, attribution:'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors'}),
+    L.tileLayer(esri+'Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+      {maxNativeZoom:16, maxZoom:19})
+  ]).addTo(mapa);
+  const satelite = L.layerGroup([
+    L.tileLayer(esri+'World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {maxNativeZoom:19, maxZoom:19, attribution:'Tiles &copy; Esri &mdash; Maxar, Earthstar Geographics'}),
+    L.tileLayer(esri+'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      {maxNativeZoom:19, maxZoom:19})
+  ]);
   camPoly = L.featureGroup().addTo(mapa);
   camBol  = L.featureGroup().addTo(mapa);
-  L.control.layers({'Mapa claro':claro,'OpenStreetMap':osm},{'Limites dos bairros':camPoly,'Bolhas de votos':camBol},{collapsed:true}).addTo(mapa);
+  L.control.layers({'Cinza claro':cinza,'Satélite':satelite},
+                   {'Limites dos bairros':camPoly,'Bolhas de votos':camBol},{collapsed:true}).addTo(mapa);
   mapa.on('overlayadd',ordenarBolhas);
 }
 
@@ -221,11 +241,14 @@ function lerPlanilha(buf){
   const t = h>0 ? rows[h-1].slice(1,7) : null;
   if(t && t.every(v=>typeof v==='number')) T=t;
   D = rows.slice(h+1).filter(r=>r[0] && typeof r[1]==='number').map(r=>{
-    const d={nome:String(r[0]).trim(),f:r[1],l:r[2],dif:r[3],b:r[4],nu:r[5],a:r[6]};
-    d.v=d.f+d.l; d.tot=d.v+d.b+d.nu; d.share=d.f/d.v; d.abst=d.a/(d.tot+d.a);
+    const d={nome:String(r[0]).trim(),f:r[1],l:r[2],b:r[4],nu:r[5],a:r[6]};
+    d.vant=d.f-d.l; d.v=d.f+d.l; d.tot=d.v+d.b+d.nu; d.share=d.f/d.v; d.abst=d.a/(d.tot+d.a);
     return d;
   });
   if(!T) T=[sum('f'),sum('l'),sum('f')-sum('l'),sum('b'),sum('nu'),sum('a')];
+  const c={nome:'Petrópolis',f:T[0],l:T[1],b:T[3],nu:T[4],a:T[5]};
+  c.vant=c.f-c.l; c.v=c.f+c.l; c.tot=c.v+c.b+c.nu; c.share=c.f/c.v; c.abst=c.a/(c.tot+c.a);
+  CID=c;
 }
 
 const popup = d => `<div class="pp"><h3>${d.nome}</h3>
@@ -250,7 +273,7 @@ function construirCamadas(){
   });
   D.forEach(d=>{
     if(!d.pos) return;
-    d.bol = L.circleMarker(d.pos,{radius:8,weight:2,color:'#fff',fillOpacity:.85,className:'bol'});
+    d.bol = L.circleMarker(d.pos,{radius:8,weight:1.5,color:'#0b1b3a',fillColor:'#0b1b3a',fillOpacity:.16});
     d.bol.bindTooltip(()=>dica(d)+(d.aprox?' · posição aproximada':''));
     d.bol.bindPopup(()=>popup(d));
     d.bol.on('click',()=>escolher(d,false));
@@ -261,7 +284,7 @@ function construirCamadas(){
 }
 
 function totais(){
-  $('tot').innerHTML = [['Flávio Bolsonaro',T[0],'f'],['Lula',T[1],'l'],['Diferença',T[2],''],['Brancos',T[3],''],['Nulos',T[4],''],['Abstenções',T[5],'']]
+  $('tot').innerHTML = [['Flávio Bolsonaro',T[0],'f'],['Lula',T[1],'l'],['Diferença',T[0]-T[1],''],['Brancos',T[3],''],['Nulos',T[4],''],['Abstenções',T[5],'']]
     .map(c=>`<div class="kpi ${c[2]}"><b>${nf(c[1])}</b><span>${c[0]}</span></div>`).join('');
 }
 function avisos(){
@@ -277,17 +300,24 @@ function avisos(){
 /* ---------- cores e tamanhos ---------- */
 function escala(){
   const v=D.map(d=>d[met]);
-  if(met==='share'||met==='dif'){
-    const c = met==='share'?.5:0, m = Math.max(...v.map(x=>Math.abs(x-c)))||1;
-    return {cor:x=>{const t=(x-c)/m;return t>=0?lerp(MEIO,AZUL,t):lerp(MEIO,VERM,-t)}, lo:c-m, hi:c+m,
-            grad:`linear-gradient(90deg,${rgb(VERM)},${rgb(MEIO)},${rgb(AZUL)})`};
+  if(met==='share'){                      // centrada na média da cidade
+    const c=CID.share, m=Math.max(...v.map(x=>Math.abs(x-c)))||.01;
+    return {cor:x=>{const t=(x-c)/m;return t>=0?lerp(MEIO,AZUL,t):lerp(MEIO,VERM,-t)}, lo:c-m, hi:c+m, centro:c,
+            grad:`linear-gradient(90deg,${rgb(VERM)},${rgb(MEIO)},${rgb(AZUL)})`,
+            titulo:'Flávio contra a média da cidade'};
   }
-  const [a,b] = met==='abst' ? [ABS0,ABS1] : [TOT0,TOT1];
+  if(met==='vant'){
+    const lo=Math.min(0,...v), hi=Math.max(0,...v);
+    return {cor:x=>x>=0?lerp(MEIO,AZUL,x/(hi||1)):lerp(MEIO,VERM,x/(lo||-1)), lo, hi,
+            grad:`linear-gradient(90deg,${lo<0?rgb(VERM)+',':''}${rgb(MEIO)},${rgb(AZUL)})`,
+            titulo:'Vantagem do Flávio sobre o Lula (votos)'};
+  }
   const mn=Math.min(...v), mx=Math.max(...v);
-  return {cor:x=>lerp(a,b,(x-mn)/(mx-mn||1)), lo:mn, hi:mx, grad:`linear-gradient(90deg,${rgb(a)},${rgb(b)})`};
+  return {cor:x=>lerp(ABS0,ABS1,(x-mn)/(mx-mn||1)), lo:mn, hi:mx,
+          grad:`linear-gradient(90deg,${rgb(ABS0)},${rgb(ABS1)})`, titulo:'% de abstenção'};
 }
 const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
-const raio = (v,max) => 6 + 34*Math.sqrt(Math.abs(v)/max);
+const raio = (v,max) => 4 + 28*Math.sqrt(Math.abs(v)/max);
 const ordenarBolhas = () => D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront());
 
 function animar(itens){
@@ -297,13 +327,19 @@ function animar(itens){
   const passo = agora=>{
     const t = dur ? Math.min(1,(agora-ini)/dur) : 1, e = 1-Math.pow(1-t,3);
     itens.forEach(i=>{
-      const c = i.c0.map((v,k)=>v+(i.c1[k]-v)*e);
-      i.el._c = c; i.el.setStyle({fillColor:rgb(c)});
+      if(i.c1){ const c = i.c0.map((v,k)=>v+(i.c1[k]-v)*e); i.el._c=c; i.el.setStyle({fillColor:rgb(c)}); }
       if(i.r1!=null){ i.el._r = i.r0+(i.r1-i.r0)*e; i.el.setRadius(i.el._r); }
     });
     if(t<1) anim=requestAnimationFrame(passo); else ordenarBolhas();
   };
   anim = requestAnimationFrame(passo);
+}
+
+function legendaTamanho(max){
+  const ref=[1,.5,.125].map(f=>{const v=max*f; return v>1000?Math.round(v/100)*100:Math.round(v)});
+  $('lst').textContent = TIT_TAM[tam];
+  $('lsz').innerHTML = [1,.5,.125].map((f,i)=>{const r=raio(max*f,max);
+    return `<div><i style="width:${2*r}px;height:${2*r}px"></i><span>${nf(ref[i])}</span></div>`}).join('');
 }
 
 function atualizar(){
@@ -315,17 +351,20 @@ function atualizar(){
     if(!gr.d){ gr.layer.setStyle({color:'#aab4c8',weight:1,fillColor:'#dfe5f0',fillOpacity:.25}); return; }
     const on=vis(gr.d), isSel=gr.d===sel;
     itens.push({el:gr.layer, c1:s.cor(gr.d[met]),
-      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.55)', weight:isSel?3:1.2, opacity:on?1:.25, fillOpacity:on?.42:.06}});
+      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.5)', weight:isSel?3:1.2, opacity:on?1:.25, fillOpacity:on?.55:.07}});
   });
   D.forEach(d=>{
     if(!d.bol) return;
     const on=vis(d), isSel=d===sel;
-    itens.push({el:d.bol, c1:s.cor(d[met]), r1:raio(d[tam],max),
-      estilo:{color:isSel?'#0b1b3a':'#fff', weight:isSel?3:2, opacity:on?1:.2, fillOpacity:on?.85:.12}});
+    itens.push({el:d.bol, r1:raio(d[tam],max),
+      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.75)', weight:isSel?3:1.5, opacity:on?1:.2, fillColor:'#0b1b3a', fillOpacity:on?(isSel?.3:.16):.04}});
   });
   animar(itens);
-  $('lt').textContent = TIT_COR[met];
-  $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi); $('lbar').style.background=s.grad;
+  $('lt').textContent = s.titulo;
+  $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi);
+  $('lmid').textContent = s.centro!=null ? 'média '+fmt(s.centro) : '';
+  $('lbar').style.background=s.grad;
+  legendaTamanho(max);
   const L2=[...D].sort((a,b)=>b[met]-a[met]).filter(vis);
   $('list').innerHTML=L2.map(d=>{
     const p=Math.max(4,(d[met]-s.lo)/((s.hi-s.lo)||1)*100);
@@ -334,14 +373,15 @@ function atualizar(){
 }
 
 function detalhe(){
-  const el=$('det');
-  if(!sel){ el.innerHTML='<h2>Escolha um bairro</h2><p class="nota" style="margin-left:0">Toque numa bolha, num bairro do mapa ou na lista abaixo.</p>'; return; }
-  const d=sel, f=d.f>=d.l;
-  el.innerHTML=`<div class="dh"><h2>${d.nome}</h2><span class="tag ${f?'f':'l'}">${f?'Flávio':'Lula'} +${nf(Math.abs(d.dif))}</span></div>
+  const el=$('det'), d=sel||CID, f=d.f>=d.l;
+  el.innerHTML=`<div class="dh"><h2>${d.nome}</h2><span class="tag ${f?'f':'l'}">${f?'Flávio':'Lula'} +${nf(Math.abs(d.vant))}</span></div>
   <div class="duelo"><div><b class="azul">${pc(d.share)}</b><span>Flávio · ${nf(d.f)}</span></div><div><b class="verm">${pc(1-d.share)}</b><span>Lula · ${nf(d.l)}</span></div></div>
   <div class="vs"><i class="a" style="width:50%"></i><i class="b"></i></div>
+  ${sel?`<p class="cmp"><b>${pp(d.share-CID.share)}</b> para o Flávio em relação à média da cidade (${pc(CID.share)}).</p>`:''}
   <div class="stats"><div><b>${nf(d.b)}</b><span>Brancos</span></div><div><b>${nf(d.nu)}</b><span>Nulos</span></div><div><b>${pc(d.abst)}</b><span>Abstenção (${nf(d.a)})</span></div></div>
-  <p class="nota" style="margin-left:0">Percentuais calculados entre Flávio e Lula.${d.pos?'':' Este bairro não tem posição no mapa.'}</p>`;
+  <p class="nota" style="margin-left:0">Percentuais calculados entre Flávio e Lula.${sel&&!d.pos?' Este bairro não tem posição no mapa.':''}</p>
+  ${sel?'<button class="link" id="limpar" type="button">Voltar para a cidade toda</button>':'<p class="nota" style="margin-left:0">Clique num bairro, numa bolha ou na lista para comparar.</p>'}`;
+  const l=$('limpar'); if(l) l.onclick=()=>{sel=null;mapa.closePopup();atualizar();detalhe()};
   requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=el.querySelector('.vs .a'); if(a) a.style.width=(d.share*100)+'%';}));
 }
 
