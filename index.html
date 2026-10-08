@@ -28,7 +28,7 @@ h1{font:700 32px/1.05 Sora,system-ui,sans-serif;letter-spacing:-.025em;margin:0}
 .kpi b{display:block;font:700 22px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .kpi span{font-size:12px;color:var(--mut)}
 .kpi.f b{color:var(--blue)} .kpi.l b{color:var(--red)}
-.bar-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}
+.bar-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}  
 .grp{display:flex;align-items:center;gap:8px;min-width:0}
 .grp>label{font-size:12px;color:var(--mut);white-space:nowrap}
 .pills{display:flex;gap:3px;background:var(--chip);border-radius:999px;padding:3px;overflow-x:auto;max-width:100%}
@@ -96,6 +96,12 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
 .pp .m.sec b{font-size:14px}
 .leaflet-tooltip{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:6px 10px;font:500 12px "DM Sans",sans-serif;box-shadow:0 4px 14px rgba(11,27,58,.3)}
 .leaflet-tooltip:before{display:none}
+
+.kpi,.card,.bar-ctl{border:0;box-shadow:0 1px 2px rgba(11,27,58,.05),0 8px 24px rgba(11,27,58,.06)}
+.kpi{border-top:0}
+.sz i{border:1.2px solid #fff;background:rgba(11,27,58,.22);box-shadow:0 0 0 1px rgba(11,27,58,.15)}
+.leaflet-tile-pane{filter:saturate(.6);opacity:.85}
+  
 @media(max-width:560px){.legend{left:14px;bottom:14px;width:190px}}
 </style>
 </head>
@@ -381,14 +387,14 @@ function atualizar(){
     if(!gr.d){ gr.layer.setStyle({color:'#aab4c8',weight:1,fillColor:'#dfe5f0',fillOpacity:.25}); return; }
     const on=vis(gr.d), isSel=gr.d===sel;
     itens.push({el:gr.layer, c1:s.cor(m.v(gr.d)),
-      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.5)', weight:isSel?3:1.2, opacity:on?1:.25, fillOpacity:on?.55:.07}});
+      estilo:{color:isSel?'#0b1b3a':'#ffffff', weight:isSel?2.2:.8, opacity:on?1:.25, fillOpacity:on?.7:.07}
   });
   D.forEach(d=>{
     if(!d.bol) return;
     const on=vis(d), isSel=d===sel;
     itens.push({el:d.bol, r1:raio(m.cnt(d),max),
-      estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.75)', weight:isSel?3:1.5, opacity:on?1:.2, fillColor:'#0b1b3a', fillOpacity:on?(isSel?.3:.16):.04}});
-  });
+      estilo:{color:isSel?'#0b1b3a':'#ffffff', weight:isSel?2.2:1.2, opacity:on?1:.2, fillColor:'#0b1b3a', fillOpacity:on?(isSel?.4:.22):.04}  });
+  
   animar(itens);
   legendas(s,max);
   if(pop) pop.update();
