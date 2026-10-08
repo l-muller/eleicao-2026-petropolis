@@ -48,6 +48,11 @@ h1{font:700 32px/1.05 Sora,system-ui,sans-serif;letter-spacing:-.025em;margin:0}
 .legend{position:absolute;left:20px;bottom:20px;z-index:800;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-radius:12px;padding:10px 12px;box-shadow:0 4px 18px rgba(11,27,58,.15);font-size:12px;color:var(--mut);width:220px}
 .legend b{display:block;color:var(--ink);font-size:12px;margin-bottom:5px;line-height:1.3}
 .legend i.g1{display:block;height:8px;border-radius:99px}
+.barw{position:relative}
+.barw u{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink);border-radius:2px;text-decoration:none}
+.legend .cid{margin-top:3px;font-size:11px}
+.expl{font-size:13px;color:var(--mut);margin:-2px 2px 12px}
+.expl b{color:var(--ink)}
 .legend .tk{display:flex;justify-content:space-between;margin-top:3px;font-variant-numeric:tabular-nums}
 .legend hr{border:0;border-top:1px solid var(--line);margin:9px 0 8px}
 .sz{display:flex;align-items:flex-end;gap:12px;margin-top:6px}
@@ -84,7 +89,11 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
 .leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 8px 28px rgba(11,27,58,.22)}
 .leaflet-popup-content{margin:12px 14px;font:14px/1.4 "DM Sans",sans-serif;color:var(--ink);min-width:210px}
 .pp h3{font:700 15px Sora,system-ui,sans-serif;margin:0 0 8px}
-.pp .pr{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:13px}
+.pp .pr{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:12px}
+.pp .m{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-top:6px}
+.pp .m span{font-size:12px;color:var(--mut)}
+.pp .m b{font:700 18px Sora,system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pp .m.sec b{font-size:14px}
 .leaflet-tooltip{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:6px 10px;font:500 12px "DM Sans",sans-serif;box-shadow:0 4px 14px rgba(11,27,58,.3)}
 .leaflet-tooltip:before{display:none}
 @media(max-width:560px){.legend{left:14px;bottom:14px;width:190px}}
@@ -94,26 +103,26 @@ h2{font:700 20px/1.2 Sora,system-ui,sans-serif;letter-spacing:-.015em;margin:0}
 <div class="w">
   <header>
     <h1>Petrópolis em votos</h1>
-    <p class="sub">A cor de cada bairro mostra onde o Flávio está acima ou abaixo da média da cidade. O tamanho da bolha mostra o peso do bairro em votos.</p>
+    <p class="sub">Escolha o que mostrar. A cor dos bairros mostra o percentual e o tamanho das bolhas mostra a quantidade de votos.</p>
   </header>
 
   <div class="kpis" id="tot"></div>
 
   <div class="bar-ctl">
-    <div class="grp"><label>Tamanho da bolha</label><div class="pills" id="pTam"></div></div>
-    <div class="grp"><label>Cor do bairro</label><div class="pills" id="pCor"></div></div>
+    <div class="grp"><label>Mostrar</label><div class="pills" id="pMet"></div></div>
     <span class="sp"></span>
     <input id="q" type="search" placeholder="Buscar bairro" aria-label="Buscar bairro">
     <button id="ver" type="button">Ver tudo</button>
   </div>
+  <p class="expl" id="expl"></p>
 
   <div class="g">
     <div class="card">
       <div class="mapwrap">
         <div id="mapa"></div>
         <div class="legend">
-          <b id="lt"></b><i class="g1" id="lbar"></i>
-          <div class="tk"><span id="lmin"></span><span id="lmid"></span><span id="lmax"></span></div>
+          <b id="lt"></b><div class="barw"><i class="g1" id="lbar"></i><u id="ltick"></u></div>
+          <div class="tk"><span id="lmin"></span><span id="lmax"></span></div><div class="cid" id="lcid"></div>
           <hr>
           <b id="lst"></b><div class="sz" id="lsz"></div>
         </div>
@@ -183,15 +192,14 @@ const pp = x => (x>=0?'+':'−')+Math.abs(x*100).toLocaleString('pt-BR',{maximum
 const MEIO=[242,245,252], AZUL=[47,91,255], VERM=[255,59,78], ABS0=[255,236,214], ABS1=[255,122,26], TINTA=[11,27,58];
 const lerp=(a,b,t)=>{t=Math.max(0,Math.min(1,t));return a.map((v,i)=>v+(b[i]-v)*t)};
 const rgb=a=>`rgb(${a.map(Math.round).join(',')})`;
-const OPC_TAM=[['tot','Votos'],['a','Abstenções']];
-const OPC_COR=[['share','Flávio vs. média'],['vant','Vantagem em votos'],['abst','Abstenção']];
-const TIT_TAM={tot:'Tamanho: votos computados',a:'Tamanho: abstenções'};
+const OPC=[['flavio','Flávio'],['lula','Lula'],['dif','Diferença'],['brancos','Brancos'],['nulos','Nulos'],['abst','Abstenção']];
 
-let D=[], F=[], T=null, CID=null, sel=null, met='share', tam='tot', mapa, camPoly, camBol, anim=0;
+let pop=null, D=[], F=[], T=null, CID=null, sel=null, met='flavio', mapa, camPoly, camBol, anim=0;
 
 /* ---------- mapa base (Esri, sem chave de API) ---------- */
 function iniciarMapa(){
   mapa = L.map('mapa',{zoomControl:true, maxZoom:19}).setView([-22.5,-43.18],11);
+  mapa.on('popupopen',e=>pop=e.popup); mapa.on('popupclose',()=>pop=null);
   const esri = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
   const cinza = L.layerGroup([
     L.tileLayer(esri+'Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
@@ -251,10 +259,32 @@ function lerPlanilha(buf){
   CID=c;
 }
 
-const popup = d => `<div class="pp"><h3>${d.nome}</h3>
-  <div class="vs"><i class="a" style="width:${d.share*100}%"></i><i class="b"></i></div>
-  <div class="pr"><span class="azul">Flávio <b>${nf(d.f)}</b> · ${pc(d.share)}</span><span class="verm">Lula <b>${nf(d.l)}</b> · ${pc(1-d.share)}</span></div></div>`;
-const dica = d => `<b>${d.nome}</b> · Flávio ${pc(d.share)} · Lula ${pc(1-d.share)}`;
+/* Cada opção define a cor (percentual) e a bolha (quantidade de votos) */
+const M={
+  flavio:{nome:'Flávio', rot:'% de votos do Flávio (entre Flávio e Lula)', rotB:'Votos do Flávio',
+          v:d=>d.share, cid:()=>CID.share, cnt:d=>d.f, cor:[47,91,255], claro:[222,232,255]},
+  lula:  {nome:'Lula', rot:'% de votos do Lula (entre Flávio e Lula)', rotB:'Votos do Lula',
+          v:d=>1-d.share, cid:()=>1-CID.share, cnt:d=>d.l, cor:[255,59,78], claro:[255,226,229]},
+  dif:   {nome:'Diferença', rot:'Vantagem de Flávio sobre Lula (Flávio − Lula)', rotB:'Diferença em votos', tipo:'dif',
+          v:d=>d.vant/d.v, cid:()=>CID.vant/CID.v, cnt:d=>Math.abs(d.vant)},
+  brancos:{nome:'Brancos', rot:'% de votos brancos (dos votos computados)', rotB:'Votos brancos',
+          v:d=>d.b/d.tot, cid:()=>CID.b/CID.tot, cnt:d=>d.b, cor:ABS1, claro:ABS0},
+  nulos: {nome:'Nulos', rot:'% de votos nulos (dos votos computados)', rotB:'Votos nulos',
+          v:d=>d.nu/d.tot, cid:()=>CID.nu/CID.tot, cnt:d=>d.nu, cor:ABS1, claro:ABS0},
+  abst:  {nome:'Abstenção', rot:'% de abstenção (do eleitorado)', rotB:'Abstenções',
+          v:d=>d.abst, cid:()=>CID.abst, cnt:d=>d.a, cor:ABS1, claro:ABS0}
+};
+const fv=(m,x)=>m.tipo==='dif'?pp(x):pc(x);
+const popup = d => {
+  const m=M[met], v=m.v(d), c=m.cid();
+  return `<div class="pp"><h3>${d.nome}</h3>
+    <div class="m"><span>${m.rot}</span><b>${fv(m,v)}</b></div>
+    <div class="m sec"><span>${m.rotB}</span><b>${nf(m.cnt(d))}</b></div>
+    <div class="m sec"><span>vs. cidade (${fv(m,c)})</span><b>${pp(v-c)}</b></div>
+    <div class="vs" style="margin-top:10px"><i class="a" style="width:${d.share*100}%"></i><i class="b"></i></div>
+    <div class="pr"><span class="azul">Flávio ${nf(d.f)}</span><span class="verm">Lula ${nf(d.l)}</span></div></div>`;
+};
+const dica = d => { const m=M[met]; return `<b>${d.nome}</b> · ${m.nome}: ${fv(m,m.v(d))}`; };
 
 function construirCamadas(){
   const feats = F.map((gr,i)=>({type:'Feature',properties:{i},geometry:{type:'MultiPolygon',coordinates:gr.polys}}));
@@ -299,25 +329,17 @@ function avisos(){
 
 /* ---------- cores e tamanhos ---------- */
 function escala(){
-  const v=D.map(d=>d[met]);
-  if(met==='share'){                      // centrada na média da cidade
-    const c=CID.share, m=Math.max(...v.map(x=>Math.abs(x-c)))||.01;
-    return {cor:x=>{const t=(x-c)/m;return t>=0?lerp(MEIO,AZUL,t):lerp(MEIO,VERM,-t)}, lo:c-m, hi:c+m, centro:c,
-            grad:`linear-gradient(90deg,${rgb(VERM)},${rgb(MEIO)},${rgb(AZUL)})`,
-            titulo:'Flávio contra a média da cidade'};
-  }
-  if(met==='vant'){
+  const m=M[met], v=D.map(m.v);
+  if(m.tipo==='dif'){
     const lo=Math.min(0,...v), hi=Math.max(0,...v);
-    return {cor:x=>x>=0?lerp(MEIO,AZUL,x/(hi||1)):lerp(MEIO,VERM,x/(lo||-1)), lo, hi,
-            grad:`linear-gradient(90deg,${lo<0?rgb(VERM)+',':''}${rgb(MEIO)},${rgb(AZUL)})`,
-            titulo:'Vantagem do Flávio sobre o Lula (votos)'};
+    return {cor:x=>x>=0?lerp(MEIO,AZUL,x/(hi||1)):lerp(MEIO,VERM,x/(lo||-1)), lo, hi, cid:m.cid(),
+            grad:`linear-gradient(90deg,${lo<0?rgb(VERM)+',':''}${rgb(MEIO)},${rgb(AZUL)})`};
   }
   const mn=Math.min(...v), mx=Math.max(...v);
-  return {cor:x=>lerp(ABS0,ABS1,(x-mn)/(mx-mn||1)), lo:mn, hi:mx,
-          grad:`linear-gradient(90deg,${rgb(ABS0)},${rgb(ABS1)})`, titulo:'% de abstenção'};
+  return {cor:x=>lerp(m.claro,m.cor,(x-mn)/(mx-mn||1)), lo:mn, hi:mx, cid:m.cid(),
+          grad:`linear-gradient(90deg,${rgb(m.claro)},${rgb(m.cor)})`};
 }
-const fmt = x => (met==='share'||met==='abst') ? pc(x) : nf(Math.round(x));
-const raio = (v,max) => 3 + 21*Math.sqrt(Math.abs(v)/max);
+const raio = (v,max) => 3 + 22*Math.sqrt(Math.abs(v)/max);
 const ordenarBolhas = () => D.filter(d=>d.bol).sort((a,b)=>b.bol.getRadius()-a.bol.getRadius()).forEach(d=>d.bol.bringToFront());
 
 function animar(itens){
@@ -335,40 +357,45 @@ function animar(itens){
   anim = requestAnimationFrame(passo);
 }
 
-function legendaTamanho(max){
+function legendas(s,max){
+  const m=M[met];
+  $('lt').textContent = m.rot;
+  $('lbar').style.background = s.grad;
+  $('lmin').textContent = fv(m,s.lo); $('lmax').textContent = fv(m,s.hi);
+  const p = Math.max(0,Math.min(100,(s.cid-s.lo)/((s.hi-s.lo)||1)*100));
+  $('ltick').style.left = `calc(${p}% - 1px)`;
+  $('lcid').textContent = '| média da cidade: '+fv(m,s.cid);
   const ref=[1,.5,.125].map(f=>{const v=max*f; return v>1000?Math.round(v/100)*100:Math.round(v)});
-  $('lst').textContent = TIT_TAM[tam];
+  $('lst').textContent = 'Bolha: '+m.rotB.toLowerCase();
   $('lsz').innerHTML = [1,.5,.125].map((f,i)=>{const r=raio(max*f,max);
     return `<div><i style="width:${2*r}px;height:${2*r}px"></i><span>${nf(ref[i])}</span></div>`}).join('');
+  $('expl').innerHTML = `<b>Cor:</b> ${m.rot} &nbsp;·&nbsp; <b>Bolha:</b> ${m.rotB.toLowerCase()}`;
 }
 
 function atualizar(){
-  const s=escala(), q=norm($('q').value), max=Math.max(...D.map(d=>Math.abs(d[tam])))||1;
+  const m=M[met], s=escala(), q=norm($('q').value), max=Math.max(...D.map(m.cnt))||1;
   const vis = d => !q || norm(d.nome).includes(q);
   const itens=[];
   F.forEach(gr=>{
     if(!gr.layer) return;
     if(!gr.d){ gr.layer.setStyle({color:'#aab4c8',weight:1,fillColor:'#dfe5f0',fillOpacity:.25}); return; }
     const on=vis(gr.d), isSel=gr.d===sel;
-    itens.push({el:gr.layer, c1:s.cor(gr.d[met]),
+    itens.push({el:gr.layer, c1:s.cor(m.v(gr.d)),
       estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.5)', weight:isSel?3:1.2, opacity:on?1:.25, fillOpacity:on?.55:.07}});
   });
   D.forEach(d=>{
     if(!d.bol) return;
     const on=vis(d), isSel=d===sel;
-    itens.push({el:d.bol, r1:raio(d[tam],max),
+    itens.push({el:d.bol, r1:raio(m.cnt(d),max),
       estilo:{color:isSel?'#0b1b3a':'rgba(11,27,58,.75)', weight:isSel?3:1.5, opacity:on?1:.2, fillColor:'#0b1b3a', fillOpacity:on?(isSel?.3:.16):.04}});
   });
   animar(itens);
-  $('lt').textContent = s.titulo;
-  $('lmin').textContent=fmt(s.lo); $('lmax').textContent=fmt(s.hi);
-  $('lmid').textContent = s.centro!=null ? 'média '+fmt(s.centro) : '';
-  $('lbar').style.background=s.grad;
-  legendaTamanho(max);
-  const L2=[...D].sort((a,b)=>b[met]-a[met]).filter(vis);
+  legendas(s,max);
+  if(pop) pop.update();
+  const L2=[...D].sort((a,b)=>m.v(b)-m.v(a)).filter(vis);
   $('list').innerHTML=L2.map(d=>{
-    const p=Math.max(4,(d[met]-s.lo)/((s.hi-s.lo)||1)*100);
-    return `<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fmt(d[met])}</em><b style="width:calc(${p}% - 12px);background:${rgb(s.cor(d[met]))}"></b></div>`;
+    const p=Math.max(4,(m.v(d)-s.lo)/((s.hi-s.lo)||1)*100);
+    return `<div class="it${d===sel?' sel':''}" tabindex="0" data-n="${D.indexOf(d)}"><span>${d.nome}</span><em>${fv(m,m.v(d))}</em><b style="width:calc(${p}% - 12px);background:${rgb(s.cor(m.v(d)))}"></b></div>`;
   }).join('');
 }
 
@@ -402,8 +429,7 @@ function pills(id, ops, get, set){
   el.onclick=e=>{const b=e.target.closest('button'); if(b){set(b.dataset.k);marcar()}};
   marcar();
 }
-pills('pTam',OPC_TAM,()=>tam,k=>{tam=k;atualizar()});
-pills('pCor',OPC_COR,()=>met,k=>{met=k;atualizar()});
+pills('pMet',OPC,()=>met,k=>{met=k;atualizar()});
 $('list').addEventListener('click',e=>{const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])});
 $('list').addEventListener('keydown',e=>{if(e.key==='Enter'){const t=e.target.closest('.it');if(t)escolher(D[+t.dataset.n])}});
 $('q').oninput=atualizar;
